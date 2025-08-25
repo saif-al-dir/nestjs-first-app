@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { db, Product } from './../db';
 import { v4 as uuidv4 } from 'uuid';
+import { CreateProductDTO } from './dtos/create-product.dto';
 
 @Injectable()
 export class ProductsService {
@@ -12,9 +13,22 @@ export class ProductsService {
     return db.products.find((p) => p.id === id) || null;
   }
 
-  public create(productData: Omit<Product, 'id'>): Product {
+  public create(productData: CreateProductDTO): Product {
     const newProduct = { ...productData, id: uuidv4() };
     db.products.push(newProduct);
     return newProduct;
+  }
+
+  public deleteById(id: Product['id']): void {
+    db.products = db.products.filter((product) => product.id !== id);
+  }
+
+  public updateById(id: Product['id'], productData: Omit<Product, 'id'>): void {
+    db.products = db.products.map((p) => {
+      if (p.id === id) {
+        return { ...p, ...productData };
+      }
+      return p;
+    });
   }
 }
