@@ -18,13 +18,22 @@ model Product {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  orders     Order[] // This indicates a one-to-many relationship
+}
+
+model Client {
+  id      String   @id @default(uuid())
+  name    String
+  address String
+  orders  Order[]
 }
 
 model Order {
-  id String  @id @default(uuid())
-  productId String
-  client String
-  address String
+  id        String   @id @default(uuid())
+  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  productId String?  // nullable
+  client    Client?  @relation(fields: [clientId], references: [id])
+  clientId  String?  // nullable
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
